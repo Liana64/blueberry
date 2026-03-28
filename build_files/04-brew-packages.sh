@@ -30,16 +30,16 @@ ARCH_ALT="x86_64"
 # --- K8s tools ---
 
 # kubectl
-KUBECTL_VERSION="v1.32.3"
+KUBECTL_VERSION="v1.35.3"
 install_bin kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl"
 
 # helm
-HELM_VERSION="v3.17.1"
+HELM_VERSION="v4.1.3"
 curl -fsSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${ARCH}.tar.gz" | tar -xz -C /tmp
 install -m 755 /tmp/linux-${ARCH}/helm "$INSTALL_DIR/helm"
 
 # k9s
-K9S_VERSION="v0.40.5"
+K9S_VERSION="v0.50.18"
 curl -fsSL "https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_Linux_${ARCH}.tar.gz" | tar -xz -C /tmp
 install -m 755 /tmp/k9s "$INSTALL_DIR/k9s"
 
@@ -49,52 +49,53 @@ curl -fsSL "https://github.com/cilium/cilium-cli/releases/download/${CILIUM_VERS
 install -m 755 /tmp/cilium "$INSTALL_DIR/cilium"
 
 # talosctl
-TALOS_VERSION="v1.9.5"
+TALOS_VERSION="v1.12.6"
 install_bin talosctl "https://github.com/siderolabs/talos/releases/download/${TALOS_VERSION}/talosctl-linux-${ARCH}"
 
 # talhelper
-TALHELPER_VERSION="v3.0.25"
+TALHELPER_VERSION="v3.1.7"
 curl -fsSL "https://github.com/budimanjojo/talhelper/releases/download/${TALHELPER_VERSION}/talhelper_linux_${ARCH}.tar.gz" | tar -xz -C /tmp
 install -m 755 /tmp/talhelper "$INSTALL_DIR/talhelper"
 
 # flux
-FLUX_VERSION="v2.4.0"
+FLUX_VERSION="v2.8.3"
 curl -fsSL "https://github.com/fluxcd/flux2/releases/download/${FLUX_VERSION}/flux_${FLUX_VERSION#v}_linux_${ARCH}.tar.gz" | tar -xz -C /tmp
 install -m 755 /tmp/flux "$INSTALL_DIR/flux"
 
 # sops
-SOPS_VERSION="v3.9.4"
+SOPS_VERSION="v3.12.2"
 install_bin sops "https://github.com/getsops/sops/releases/download/${SOPS_VERSION}/sops-${SOPS_VERSION}.linux.${ARCH}"
 
 # --- CLI tools ---
 
 # lazygit
-LAZYGIT_VERSION="0.46.0"
+LAZYGIT_VERSION="0.60.0"
 curl -fsSL "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_${ARCH_ALT}.tar.gz" | tar -xz -C /tmp
 install -m 755 /tmp/lazygit "$INSTALL_DIR/lazygit"
 
 # atuin
 ATUIN_VERSION="v18.13.6"
-curl -fsSL "https://github.com/atuinsh/atuin/releases/download/${ATUIN_VERSION}/atuin-${ATUIN_VERSION}-${ARCH_ALT}-unknown-linux-musl.tar.gz" | tar -xz -C /tmp --strip-components=1
+curl -fsSL "https://github.com/atuinsh/atuin/releases/download/${ATUIN_VERSION}/atuin-${ARCH_ALT}-unknown-linux-musl.tar.gz" | tar -xz -C /tmp
+  --strip-components=1
 install -m 755 /tmp/atuin "$INSTALL_DIR/atuin"
 
 # starship
-STARSHIP_VERSION="v1.22.1"
+STARSHIP_VERSION="v1.24.2"
 curl -fsSL "https://github.com/starship/starship/releases/download/${STARSHIP_VERSION}/starship-${ARCH_ALT}-unknown-linux-musl.tar.gz" | tar -xz -C /tmp
 install -m 755 /tmp/starship "$INSTALL_DIR/starship"
 
 # yazi
-YAZI_VERSION="v25.3.24"
+YAZI_VERSION="v26.1.22"
 curl -fsSL "https://github.com/sxyazi/yazi/releases/download/${YAZI_VERSION}/yazi-${ARCH_ALT}-unknown-linux-musl.zip" -o /tmp/yazi.zip
 unzip -o /tmp/yazi.zip -d /tmp/yazi-extract
 install -m 755 /tmp/yazi-extract/yazi-${ARCH_ALT}-unknown-linux-musl/yazi "$INSTALL_DIR/yazi"
 
 # yq
-YQ_VERSION="v4.45.1"
+YQ_VERSION="v4.52.5"
 install_bin yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${ARCH}"
 
 # xh
-XH_VERSION="v0.24.1"
+XH_VERSION="v0.25.3"
 curl -fsSL "https://github.com/ducaale/xh/releases/download/${XH_VERSION}/xh-${XH_VERSION}-${ARCH_ALT}-unknown-linux-musl.tar.gz" | tar -xz -C /tmp --strip-components=1
 install -m 755 /tmp/xh "$INSTALL_DIR/xh"
 
