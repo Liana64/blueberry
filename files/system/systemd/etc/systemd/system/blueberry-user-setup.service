@@ -1,0 +1,22 @@
+[Unit]
+Description=Deploy dotfiles and set zsh for new users on first boot
+After=local-fs.target
+ConditionPathExists=!/var/lib/blueberry-user-setup-done
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c '\
+    for user_home in /home/*/; do \
+        user=$(basename "$user_home"); \
+        id "$user" &>/dev/null || continue; \
+        if [ ! -f "$user_home/.zshrc" ]; then \
+            cp -rn /etc/skel/. "$user_home/"; \
+            chown -R "$user:$user" "$user_home"; \
+            usermod -s /bin/zsh "$user"; \
+        fi; \
+    done && \
+    touch /var/lib/blueberry-user-setup-done'
+
+[Install]
+WantedBy=multi-user.target

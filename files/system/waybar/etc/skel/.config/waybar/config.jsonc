@@ -1,0 +1,97 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 14,
+    "output": ["*"],
+
+    "modules-left": ["custom/launcher", "sway/workspaces", "sway/mode"],
+    "modules-center": ["clock"],
+    "modules-right": ["custom/yubikey", "custom/usbguard", "custom/vpn", "network", "battery", "pulseaudio", "tray"],
+
+    "custom/launcher": {
+        "format": " "
+    },
+
+    "custom/usbguard": {
+        "format": " {text}",
+        "exec": "/etc/sway/scripts/waybar-usbguard",
+        "return-type": "json",
+        "on-click": "/etc/sway/scripts/waybar-usbguard allow",
+        "on-click-right": "/etc/sway/scripts/waybar-usbguard reject"
+    },
+
+    "custom/yubikey": {
+        "exec": "/etc/sway/scripts/waybar-yubikey",
+        "return-type": "json"
+    },
+
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": true,
+        "persistent-workspaces": {
+            "q": [], "w": [], "e": [],
+            "a": [], "s": [], "d": [],
+            "z": [], "x": [], "c": []
+        },
+        "disable-click": true
+    },
+
+    "sway/mode": {
+        "tooltip": false
+    },
+
+    "clock": {
+        "format": "{:%a %b %e %I:%M %p}",
+        "tooltip-format": "{:%Y-%m-%d | %H:%M}"
+    },
+
+    "battery": {
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "format-plugged": "󰚦 ",
+        "states": {
+            "critical": 15,
+            "warning": 35
+        },
+        "tooltip": true,
+        "tooltip-format": "{capacity}%"
+    },
+
+    "custom/vpn": {
+        "exec": "if [ -e /proc/sys/net/ipv4/conf/wg0 ]; then echo '{\"text\": \"\", \"class\": \"connected\"}'; else echo '{\"text\": \"\", \"class\": \"disconnected\"}'; fi",
+        "return-type": "json",
+        "interval": 5
+    },
+
+    "network": {
+        "interval": 2,
+        "format-wifi": "     {essid}",
+        "format-ethernet": "󰈀    {ifname}",
+        "format-linked": "󰌗   {ifname}",
+        "format-disconnected": " ",
+        "tooltip-format": "{essid} {ifname}"
+    },
+
+    "pulseaudio": {
+        "format": "󱄠  {volume}%",
+        "format-bluetooth": "{icon} {volume}% {format_source}",
+        "format-bluetooth-muted": "{icon} {format_source}",
+        "format-muted": "󰸈",
+        "format-source": "",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol"
+    },
+
+    "tray": {
+        "icon-size": 13,
+        "spacing": 10
+    }
+}
