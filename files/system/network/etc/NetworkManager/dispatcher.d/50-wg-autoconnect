@@ -1,0 +1,45 @@
+#!/bin/bash
+# Auto-connect WireGuard VPN on untrusted networks
+# Place trusted SSIDs in /var/secrets/wireguard/trusted-networks (one per line)
+# Place WireGuard config at /var/secrets/wireguard/wg0.conf
+
+INTERFACE="$1"
+ACTION="$2"
+WG_INTERFACE="wg0"
+WG_CONFIG="/var/secrets/wireguard/wg0.conf"
+TRUSTED_NETWORKS="/var/secrets/wireguard/trusted-networks"
+
+[ ! -f "$WG_CONFIG" ] && exit 0
+
+is_up() {
+    ip link show "$WG_INTERFACE" &>/dev/null
+}
+
+is_ethernet() {
+    nmcli -t -f type,state dev | grep -q '^ethernet:connected'
+}
+
+is_trusted() {
+    local current_ssid
+    current_ssid=$(nmcli -t -f active,ssid dev wifi | grep '^yes:' | cut -d: -f2-)
+    [ -z "$current_ssid" ] && return 1
+    [ ! -f "$TRUSTED_NETWORKS" ] && return 1
+    while IFS= read -r ssid; do
+        [[ "$ssid" =~ ^#.*$ || -z "$ssid" ]] && continue
+        ssid=$(echo "$ssid" | xargs)
+        [ "$current_ssid" = "$ssid" ] && return 0
+    done < "$TRUSTED_NETWORKS"
+    return 1
+}
+
+[ "$CONNECTIVITY_STATE" != "FULL" ] && exit 0
+
+case "$ACTION" in
+    connectivity-change)
+        if is_ethernet || is_trusted; then
+            is_up && wg-quick down "$WG_CONFIG"
+        else
+            is_up || wg-quick up "$WG_CONFIG"
+        fi
+        ;;
+esac

@@ -1,0 +1,30 @@
+[Unit]
+Description=Install Flatpak apps on first boot
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/var/lib/blueberry-flatpak-installed
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c '\
+    flatpak install -y --noninteractive flathub \
+        org.mozilla.firefox \
+        org.mozilla.Thunderbird \
+        org.videolan.VLC \
+        org.libreoffice.LibreOffice \
+        org.signal.Signal \
+        im.riot.Riot \
+        dev.vencord.Vesktop \
+        md.obsidian.Obsidian \
+        com.bitwarden.desktop \
+        com.moonlight_stream.Moonlight \
+        com.rustdesk.RustDesk \
+        me.proton.Mail \
+        org.gimp.GIMP \
+        org.localsend.localsend_app \
+        us.zoom.Zoom
+    && touch /var/lib/blueberry-flatpak-installed'
+
+[Install]
+WantedBy=multi-user.target
