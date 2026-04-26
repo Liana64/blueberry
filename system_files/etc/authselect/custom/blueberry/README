@@ -1,0 +1,13 @@
+Blueberry custom authselect profile
+====================================
+
+Derived from Fedora's stock 'sssd' profile. Adds an opt-in pam_u2f line
+gated by the 'with-pam-u2f-2fa' feature on system-auth and password-auth.
+
+Activate with:
+    authselect select custom/blueberry with-faillock with-pam-u2f-2fa with-fingerprint --force
+
+The image build does this in build_files/45-authselect.sh.
+
+Users without YubiKey-registered U2F credentials still log in normally —
+pam_u2f is 'sufficient' and falls through to pam_unix on failure.
