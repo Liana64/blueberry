@@ -323,3 +323,51 @@ enroll-yubikey:
     bb_warn "stub — full implementation tracked in TODO"
     bb_step "expected flow: pamu2fcfg >> ~/.config/Yubico/u2f_keys"
     exit 0
+
+# Flip bluetooth.service between enabled+running and disabled+stopped
+[group('Toggles')]
+toggle-bluetooth:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "toggle-bluetooth"
+    if systemctl is-enabled --quiet bluetooth.service; then
+        sudo systemctl disable --now bluetooth.service
+        bb_ok "bluetooth disabled"
+    else
+        sudo systemctl enable --now bluetooth.service
+        bb_ok "bluetooth enabled"
+    fi
+
+# Toggle a writable /usr overlay for ad-hoc development (lost on reboot)
+[group('Toggles')]
+toggle-devmode:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "toggle-devmode"
+    bb_warn "stub — full implementation tracked in TODO"
+    bb_step "intended semantics: sudo rpm-ostree usroverlay (transient until reboot)"
+    exit 0
+
+# Install Cider (Apple Music client) inside a dedicated distrobox + export desktop entry
+[group('Toggles')]
+install-cider:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "install-cider"
+    bb_warn "stub — full implementation tracked in TODO"
+    bb_step "intended: distrobox create apps-cider && distrobox-export --app cider"
+    exit 0
+
+# Pick from a curated extras menu (real list deferred)
+[group('Toggles')]
+install-extras:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "install-extras"
+    bb_warn "stub — full implementation tracked in TODO"
+    bb_step "intended: gum choose over a curated package list"
+    exit 0
