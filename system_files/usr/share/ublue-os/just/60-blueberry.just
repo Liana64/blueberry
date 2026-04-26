@@ -139,11 +139,12 @@ clean:
     bb_ok "cleaned"
 
 # Show recent security anomalies (SELinux denials, faillock, usbguard)
-anomalies:
+[group('Diagnostics')]
+audit-summary:
     #!/usr/bin/env bash
     set -eu
     . /usr/lib/blueberry/gum-theme.sh
-    bb_header "anomalies (last 24h)"
+    bb_header "audit-summary (last 24h)"
     journalctl --since "24 hours ago" --no-pager 2>/dev/null \
         | grep -iE 'avc:|faillock|usbguard|policy violation' \
         || bb_ok "no anomalies"
