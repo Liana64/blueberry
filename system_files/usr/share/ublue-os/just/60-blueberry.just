@@ -51,18 +51,24 @@ assemble-distrobox:
     distrobox assemble create --file /usr/share/blueberry/distrobox/distrobox.ini
     bb_ok "distrobox ready"
 
-# Toggle the Framework charge limit between 80% and 100%
-toggle-charge-limit:
+# Set the Framework charge end-threshold (60-100). Persists across resume via systemd unit.
+[group('Hardware')]
+framework-charge-limit:
     #!/usr/bin/env bash
     set -eu
     . /usr/lib/blueberry/gum-theme.sh
-    bb_header "toggle-charge-limit"
+    bb_header "framework-charge-limit"
     f=/sys/class/power_supply/BAT1/charge_control_end_threshold
-    cur="$(cat "$f")"
-    if [ "$cur" = "80" ]; then
-        new=100
-    else
-        new=80
+    if [ ! -w "$f" ] && [ ! -e "$f" ]; then
+        bb_err "charge_control_end_threshold not present — is this a Framework?"
+        exit 1
+    fi
+    cur="$(cat "$f" 2>/dev/null || echo "?")"
+    bb_step "current limit: ${cur}%"
+    new="$(gum input --placeholder "60-100" --prompt "new charge limit %: ")"
+    if ! [[ "$new" =~ ^[0-9]+$ ]] || [ "$new" -lt 60 ] || [ "$new" -gt 100 ]; then
+        bb_err "value must be an integer in 60-100"
+        exit 1
     fi
     echo "$new" | sudo tee "$f" >/dev/null
     bb_ok "charge limit: ${cur}% → ${new}%"
@@ -157,6 +163,7 @@ enroll-fido2:
 
 # Generate and enroll Secure Boot keys, then sign the running deployment.
 # Layers sbctl on first run; reboot once after enrollment so firmware
+
 # picks up the new keys.
 enroll-secure-boot:
     #!/usr/bin/env bash
@@ -177,4 +184,3 @@ enroll-secure-boot:
     sudo sbctl enroll-keys --microsoft
     sudo sbctl sign-all
     bb_ok "secure boot configured — reboot, then verify with: sudo sbctl verify"
-
