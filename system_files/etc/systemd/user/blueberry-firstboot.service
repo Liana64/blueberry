@@ -1,0 +1,10 @@
+[Unit]
+Description=Blueberry first-boot user setup
+ConditionPathExists=!%h/.config/blueberry/firstboot.done
+
+[Service]
+Type=oneshot
+ExecStart=/usr/share/blueberry/firstboot/setup.sh
+
+[Install]
+WantedBy=default.target
