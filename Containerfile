@@ -2,7 +2,7 @@
 # CARGO_HOME and --root paths land under /var/tmp because base-main
 # pre-creates /root/.cargo and /opt as non-directory entries that cargo
 # refuses to overwrite.
-FROM ghcr.io/ublue-os/base-main:latest AS rust-builder
+FROM ghcr.io/ublue-os/base-main:44 AS rust-builder
 ARG AUTOTILING_RS_REF=59cefd205247aea03d7e7fa26b878deef3b454de
 ENV CARGO_HOME=/var/tmp/cargo-home
 RUN dnf -y install cargo rust binutils git \
@@ -18,7 +18,7 @@ RUN dnf -y install cargo rust binutils git \
 FROM scratch AS ctx
 COPY build_files /
 
-FROM ghcr.io/ublue-os/base-main:latest
+FROM ghcr.io/ublue-os/base-main:44
 
 LABEL org.opencontainers.image.title="blueberry"
 LABEL org.opencontainers.image.description="Opinionated atomic Fedora image for Framework AMD AI 300 laptops"
