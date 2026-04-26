@@ -3,7 +3,7 @@ FROM scratch AS ctx
 COPY build_files /
 
 # Base Image
-FROM ghcr.io/ublue-os/base-main:stable
+FROM ghcr.io/ublue-os/base-main:latest
 
 LABEL org.opencontainers.image.title="blueberry"
 LABEL org.opencontainers.image.description="Opinionated atomic Fedora image for Framework AMD AI 300 laptops"
