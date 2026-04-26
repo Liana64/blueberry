@@ -178,24 +178,3 @@ enroll-secure-boot:
     sudo sbctl sign-all
     bb_ok "secure boot configured — reboot, then verify with: sudo sbctl verify"
 
-# Rebase to the stable channel (ghcr.io/liana64/blueberry:stable)
-rebase-stable:
-    #!/usr/bin/env bash
-    set -eu
-    . /usr/lib/blueberry/gum-theme.sh
-    bb_header "rebase-stable"
-    sudo bootc switch ghcr.io/liana64/blueberry:stable
-    bb_ok "rebased — reboot to apply"
-
-# Rebase to the testing channel (ghcr.io/liana64/blueberry:testing)
-rebase-testing:
-    #!/usr/bin/env bash
-    set -eu
-    . /usr/lib/blueberry/gum-theme.sh
-    bb_header "rebase-testing"
-    if ! gum confirm "Switch to the testing channel?"; then
-        bb_warn "cancelled"
-        exit 0
-    fi
-    sudo bootc switch ghcr.io/liana64/blueberry:testing
-    bb_ok "rebased — reboot to apply"

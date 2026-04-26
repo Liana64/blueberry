@@ -17,7 +17,7 @@ An opinionated, atomic [bootc](https://github.com/bootc-dev/bootc) Fedora image 
 From any bootc system:
 
 ```sh
-sudo bootc switch ghcr.io/<owner>/blueberry:stable
+sudo bootc switch ghcr.io/<owner>/blueberry:latest
 sudo systemctl reboot
 ```
 
@@ -51,7 +51,7 @@ Images are signed with [cosign](https://github.com/sigstore/cosign). The public 
 To verify against a published image:
 
 ```sh
-cosign verify --key cosign.pub ghcr.io/<owner>/blueberry:stable
+cosign verify --key cosign.pub ghcr.io/<owner>/blueberry:latest
 ```
 
 ## Repository contents
