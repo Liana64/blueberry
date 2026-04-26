@@ -38,4 +38,14 @@ systemctl enable pcscd.service
 # Bluetooth disabled at boot; waybar toggle re-enables
 systemctl disable bluetooth.service || true
 
+# Spec §2 — services that must never run on Blueberry by default.
+# Some of these are not installed on base-main; `|| true` keeps the build
+# idempotent across base image churn.
+for svc in avahi-daemon.service cups-browsed.service geoclue.service \
+           packagekit.service abrt-journal-core.service abrt-oops.service \
+           abrt-vmcore.service abrt-xorg.service abrtd.service \
+           xdg-desktop-portal-wlr.service; do
+    systemctl mask "$svc" || true
+done
+
 echo "::endgroup::"
