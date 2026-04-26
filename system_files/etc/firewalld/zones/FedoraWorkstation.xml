@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zone>
+  <short>Fedora Workstation</short>
+  <description>Default zone for Blueberry: SSH allowed for sshd; LocalSend on 53317.</description>
+  <service name="dhcpv6-client"/>
+  <service name="mdns"/>
+  <service name="samba-client"/>
+  <service name="ssh"/>
+  <port port="53317" protocol="tcp"/>
+  <port port="53317" protocol="udp"/>
+</zone>
