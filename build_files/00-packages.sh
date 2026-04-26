@@ -25,7 +25,7 @@ FEDORA_PACKAGES=(
     greetd
     greetd-tuigreet
     polkit
-    polkit-gnome
+    polkit-qt
 
     # sway desktop
     sway
