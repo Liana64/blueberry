@@ -206,3 +206,62 @@ enroll-secure-boot:
     sudo sbctl enroll-keys --microsoft
     sudo sbctl sign-all
     bb_ok "secure boot configured — reboot, then verify with: sudo sbctl verify"
+
+# Reset all rpm-ostree layered packages and overrides (returns to pristine image)
+[group('Lifecycle')]
+factory-reset:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "factory-reset"
+    bb_warn "this drops all layered packages and overrides — system files in /etc are kept"
+    if ! gum confirm "Continue with factory reset?"; then
+        bb_warn "cancelled"
+        exit 0
+    fi
+    sudo rpm-ostree reset
+    bb_ok "reset staged — reboot to apply"
+
+# Show timestamps of the current and previous deployments (a poor-man's changelog)
+[group('Lifecycle')]
+changelog:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "changelog"
+    cur="$(rpm-ostree status --json | jq -r '.deployments[0].timestamp // empty')"
+    prev="$(rpm-ostree status --json | jq -r '.deployments[1].timestamp // empty')"
+    if [ -n "$cur" ]; then
+        bb_step "current : $(date -d "@${cur}" 2>/dev/null || echo "$cur")"
+    fi
+    if [ -n "$prev" ]; then
+        bb_step "previous: $(date -d "@${prev}" 2>/dev/null || echo "$prev")"
+    else
+        bb_warn "no previous deployment recorded"
+    fi
+    bb_warn "stub — full implementation tracked in TODO"
+
+# Re-render the Blueberry message-of-the-day
+[group('Lifecycle')]
+motd:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "motd"
+    if [ -r /etc/profile.d/blueberry-motd.sh ]; then
+        # shellcheck disable=SC1091
+        . /etc/profile.d/blueberry-motd.sh
+    else
+        bb_warn "stub — full implementation tracked in TODO"
+    fi
+    bb_ok "done"
+
+# Repair user flatpak installation (permissions, caches, partial pulls)
+[group('Lifecycle')]
+fix-flatpak-permissions:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "fix-flatpak-permissions"
+    gum spin --title "flatpak repair --user" -- flatpak repair --user || bb_warn "flatpak repair reported issues"
+    bb_ok "flatpak user installation repaired"
