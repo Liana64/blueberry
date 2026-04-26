@@ -20,3 +20,11 @@ enable_unit greetd.service
 systemctl set-default graphical.target
 disable_unit gdm.service
 mask_unit gdm.service
+
+# Hardware
+enable_unit framework-charge-limit.service
+enable_unit lock-before-sleep.service
+enable_unit pcscd.service
+
+# Bluetooth disabled at boot; waybar toggle re-enables
+disable_unit bluetooth.service
