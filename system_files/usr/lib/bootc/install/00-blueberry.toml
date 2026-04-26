@@ -1,0 +1,8 @@
+# Tells bootc (and bootc-image-builder) the default root filesystem
+# to provision when this image is installed. Without this, BIB fails
+# with "missing required info: DefaultRootFs".
+[install]
+root-fs-type = "btrfs"
+
+[install.filesystem.root]
+type = "btrfs"
