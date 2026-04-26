@@ -1,0 +1,15 @@
+/* /etc/xdg/rofi/config.rasi — Blueberry system rofi config.
+ * Ported from ~/.dotfiles/home/linux/rofi.nix.
+ * Theme lives at /etc/xdg/rofi/themes/blueberry.rasi.
+ */
+
+configuration {
+    modi:                "drun";
+    show-icons:          true;
+    drun-display-format: "{name}";
+    display-drun:        "";
+    sidebar-mode:        false;
+    font:                "JetBrainsMono Nerd Font 12";
+}
+
+@theme "blueberry"
