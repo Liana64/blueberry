@@ -1,0 +1,7 @@
+[Unit]
+Description=Inhibit suspend while CalDigit TS4 is docked
+StopWhenUnneeded=yes
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/systemd-inhibit --what=sleep --who=blueberry --why="Docked to TS4" --mode=block /usr/libexec/blueberry/dock-monitor.sh

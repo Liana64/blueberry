@@ -1,0 +1,2 @@
+ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{vendor_name}=="CalDigit, Inc.", TAG+="systemd", ENV{SYSTEMD_WANTS}="inhibit-sleep-when-docked.service"
+ACTION=="remove", SUBSYSTEM=="thunderbolt", ATTR{vendor_name}=="CalDigit, Inc.", RUN+="/bin/systemctl stop inhibit-sleep-when-docked.service"
