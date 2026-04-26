@@ -1,0 +1,83 @@
+/* /etc/xdg/waybar/style.css — Blueberry system waybar styling.
+ * Ported from ~/.dotfiles/home/linux/waybar.nix (groove palette).
+ *
+ * Font order: JetBrainsMono Nerd Font (preferred — Fedora has no nerd
+ * variant in F43 repos yet, see build_files/00-packages.sh) then
+ * Cascadia Mono NF (cascadia-mono-nf-fonts RPM, the closest mono nerd
+ * font Fedora ships) then plain JetBrains Mono.
+ */
+
+* {
+    font-family: "JetBrainsMono Nerd Font", "Cascadia Mono NF", "JetBrains Mono", monospace;
+    font-size: 12px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: #181818;
+    color: #fbf1c7;
+}
+
+#workspaces {
+    background-color: #181818;
+    margin: 0;
+}
+
+#workspaces button {
+    background-color: transparent;
+    color: #ffffff;
+    transition: all 0.1s ease;
+}
+
+#workspaces button.focused {
+    color: #ea6962;
+}
+
+#workspaces button.persistent {
+    color: #fbf1c7;
+}
+
+#clock,
+#network,
+#bluetooth,
+#battery,
+#pulseaudio,
+#tray,
+#custom-usbguard {
+    color: #ffffff;
+    background-color: #181818;
+    margin: 4px 2px 4px 4.5px;
+    padding: 2px 6px;
+}
+
+#network.ethernet,
+#bluetooth.on {
+    color: #181818;
+    background-color: #d4be98;
+    margin: 4px 2px 4px 4.5px;
+    padding: 2px 6px;
+}
+
+#network.disconnected,
+#battery.critical {
+    color: #ffffff;
+    background-color: #ea6962;
+    margin: 4px 2px 4px 4.5px;
+    padding: 2px 6px;
+}
+
+#battery.warning,
+#usbguard.blocked {
+    color: #ffffff;
+    background-color: #e79a4e;
+    margin: 4px 2px 4px 4.5px;
+    padding: 2px 6px;
+}
+
+#battery.charging,
+#bluetooth.connected {
+    color: #ffffff;
+    background-color: #89b482;
+    margin: 4px 2px 4px 4.5px;
+    padding: 2px 6px;
+}
