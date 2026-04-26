@@ -74,17 +74,38 @@ framework-charge-limit:
     bb_ok "charge limit: ${cur}% → ${new}%"
 
 # Layer xdg-desktop-portal-wlr for screencasting (Vesktop/Zoom screen share)
-install-screencast:
+[group('Toggles')]
+enable-screencast:
     #!/usr/bin/env bash
     set -eu
     . /usr/lib/blueberry/gum-theme.sh
-    bb_header "install-screencast"
+    bb_header "enable-screencast"
     if rpm -q xdg-desktop-portal-wlr >/dev/null 2>&1; then
         bb_ok "already installed"
         exit 0
     fi
     sudo rpm-ostree install xdg-desktop-portal-wlr
     bb_ok "layered — reboot to activate"
+    if gum confirm "reboot now?"; then
+        systemctl reboot
+    fi
+
+# Unlayer xdg-desktop-portal-wlr (no-op if not currently layered)
+[group('Toggles')]
+disable-screencast:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "disable-screencast"
+    if ! rpm -q xdg-desktop-portal-wlr >/dev/null 2>&1; then
+        bb_ok "not currently installed"
+        exit 0
+    fi
+    sudo rpm-ostree uninstall xdg-desktop-portal-wlr
+    bb_ok "unlayered — reboot to deactivate"
+    if gum confirm "reboot now?"; then
+        systemctl reboot
+    fi
 
 # Re-run the per-user Homebrew bundle (after Brewfile changes)
 brew-bundle:
