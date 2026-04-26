@@ -9,19 +9,40 @@ set -eou pipefail
 REPOS_DIR="/etc/yum.repos.d"
 ENABLED=()
 
+# Repos that are intentionally enabled by the base image (ublue-os/base-main)
+# and should NOT trigger a validation failure.
+ALLOWLIST=(
+    _copr_ublue-os-akmods.repo
+    _copr:copr.fedorainfracloud.org:ublue-os:akmods.repo
+)
+
 if [[ ! -d "$REPOS_DIR" ]]; then
     echo "::endgroup::"
     exit 0
 fi
 
+is_allowed() {
+    local name="$1"
+    for a in "${ALLOWLIST[@]}"; do
+        [[ "$name" == "$a" ]] && return 0
+    done
+    return 1
+}
+
 check_file() {
     local f="$1"
     [[ -f "$f" && -r "$f" ]] || return 0
+    local name
+    name="$(basename "$f")"
     if grep -q "^enabled=1" "$f" 2>/dev/null; then
-        echo "ENABLED: $(basename "$f")"
-        ENABLED+=("$(basename "$f")")
+        if is_allowed "$name"; then
+            echo "Allowed:  $name"
+        else
+            echo "ENABLED:  $name"
+            ENABLED+=("$name")
+        fi
     else
-        echo "Disabled: $(basename "$f")"
+        echo "Disabled: $name"
     fi
 }
 

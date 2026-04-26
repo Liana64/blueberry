@@ -66,3 +66,136 @@ toggle-charge-limit:
     fi
     echo "$new" | sudo tee "$f" >/dev/null
     bb_ok "charge limit: ${cur}% → ${new}%"
+
+# Layer xdg-desktop-portal-wlr for screencasting (Vesktop/Zoom screen share)
+install-screencast:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "install-screencast"
+    if rpm -q xdg-desktop-portal-wlr >/dev/null 2>&1; then
+        bb_ok "already installed"
+        exit 0
+    fi
+    sudo rpm-ostree install xdg-desktop-portal-wlr
+    bb_ok "layered — reboot to activate"
+
+# Re-run the per-user Homebrew bundle (after Brewfile changes)
+brew-bundle:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "brew-bundle"
+    if [ ! -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+        bb_err "brew not installed"
+        exit 1
+    fi
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    gum spin --title "brew bundle" -- \
+        brew bundle --file=/usr/share/blueberry/Brewfile
+    bb_ok "brew bundle complete"
+
+# Prune unused flatpaks, podman images, and rpm-ostree caches
+clean:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "clean"
+    gum spin --title "flatpak: prune unused" -- \
+        flatpak uninstall --user --unused -y || bb_warn "flatpak: nothing to prune"
+    if command -v podman >/dev/null; then
+        gum spin --title "podman: prune images" -- \
+            podman image prune -af || bb_warn "podman: nothing to prune"
+    fi
+    gum spin --title "rpm-ostree: cleanup" -- \
+        sudo rpm-ostree cleanup -bm
+    bb_ok "cleaned"
+
+# Show recent security anomalies (SELinux denials, faillock, usbguard)
+anomalies:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "anomalies (last 24h)"
+    journalctl --since "24 hours ago" --no-pager 2>/dev/null \
+        | grep -iE 'avc:|faillock|usbguard|policy violation' \
+        || bb_ok "no anomalies"
+
+# Enroll a fingerprint with fprintd
+enroll-fingerprint:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "enroll-fingerprint"
+    finger=$(printf '%s\n' \
+        right-index-finger right-thumb right-middle-finger \
+        left-index-finger  left-thumb  left-middle-finger \
+        | gum choose --header "Which finger?")
+    fprintd-enroll -f "$finger" "$USER"
+    bb_ok "fingerprint enrolled ($finger)"
+
+# Enroll a FIDO2 device (e.g. YubiKey) to unlock the LUKS root partition
+enroll-fido2:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "enroll-fido2"
+    mapfile -t devs < <(lsblk -lpno NAME,FSTYPE | awk '$2 == "crypto_LUKS" { print $1 }')
+    if [ "${#devs[@]}" -eq 0 ]; then
+        bb_err "no LUKS devices found"
+        exit 1
+    fi
+    if [ "${#devs[@]}" -eq 1 ]; then
+        target="${devs[0]}"
+    else
+        target=$(printf '%s\n' "${devs[@]}" | gum choose --header "Which LUKS device?")
+    fi
+    bb_step "enrolling FIDO2 token on $target"
+    bb_warn "touch your token when it blinks"
+    sudo systemd-cryptenroll --fido2-device=auto "$target"
+    bb_ok "FIDO2 token enrolled"
+
+# Generate and enroll Secure Boot keys, then sign the running deployment.
+# Layers sbctl on first run; reboot once after enrollment so firmware
+# picks up the new keys.
+enroll-secure-boot:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "enroll-secure-boot"
+    if ! command -v sbctl >/dev/null; then
+        bb_warn "sbctl not installed — layering it now"
+        sudo rpm-ostree install sbctl
+        bb_warn "reboot, then re-run: ujust enroll-secure-boot"
+        exit 0
+    fi
+    if ! gum confirm "Generate keys, enroll them in firmware, and sign the running deployment?"; then
+        bb_warn "cancelled"
+        exit 0
+    fi
+    sudo sbctl create-keys
+    sudo sbctl enroll-keys --microsoft
+    sudo sbctl sign-all
+    bb_ok "secure boot configured — reboot, then verify with: sudo sbctl verify"
+
+# Rebase to the stable channel (ghcr.io/liana64/blueberry:stable)
+rebase-stable:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "rebase-stable"
+    sudo bootc switch ghcr.io/liana64/blueberry:stable
+    bb_ok "rebased — reboot to apply"
+
+# Rebase to the testing channel (ghcr.io/liana64/blueberry:testing)
+rebase-testing:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "rebase-testing"
+    if ! gum confirm "Switch to the testing channel?"; then
+        bb_warn "cancelled"
+        exit 0
+    fi
+    sudo bootc switch ghcr.io/liana64/blueberry:testing
+    bb_ok "rebased — reboot to apply"
