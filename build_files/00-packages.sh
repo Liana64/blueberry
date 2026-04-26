@@ -76,6 +76,7 @@ FEDORA_PACKAGES=(
     pcsc-lite
     pcsc-lite-ccid
     yubikey-manager
+    pam-u2f
 
     # containers + dev tooling layered on host
     flatpak

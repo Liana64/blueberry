@@ -8,3 +8,5 @@ Type=simple
 # logind's HandleLidSwitchDocked=ignore relies on.
 ExecStart=/usr/bin/systemd-inhibit --what=sleep:handle-lid-switch --who=blueberry --why="Docked to TS4" --mode=block /usr/libexec/blueberry/dock-monitor.sh
 Restart=on-failure
+RestartSec=5s
+StartLimitBurst=3

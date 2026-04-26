@@ -7,5 +7,5 @@ kargs = [
     "page_alloc.shuffle=1",
     "randomize_kstack_offset=on",
     "vsyscall=none",
-    "mitigations=auto,nosmt",
+    "mitigations=auto",
 ]

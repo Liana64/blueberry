@@ -1,6 +1,3 @@
-auth        required      pam_faillock.so preauth silent deny=4 unlock_time=1200
 auth        sufficient    pam_u2f.so cue
 auth        include       system-auth
-auth        [default=die] pam_faillock.so authfail
-account     required      pam_faillock.so
 account     include       system-auth

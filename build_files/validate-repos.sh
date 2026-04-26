@@ -9,11 +9,10 @@ set -eou pipefail
 REPOS_DIR="/etc/yum.repos.d"
 ENABLED=()
 
-# Repos that are intentionally enabled by the base image (ublue-os/base-main)
-# and should NOT trigger a validation failure.
-ALLOWLIST=(
-    _copr_ublue-os-akmods.repo
-    _copr:copr.fedorainfracloud.org:ublue-os:akmods.repo
+# Repo IDs (the [section] header inside the .repo file) that the base
+# image (ublue-os/base-main) intentionally ships enabled.
+ALLOWLIST_IDS=(
+    "copr:copr.fedorainfracloud.org:ublue-os:akmods"
 )
 
 if [[ ! -d "$REPOS_DIR" ]]; then
@@ -21,43 +20,45 @@ if [[ ! -d "$REPOS_DIR" ]]; then
     exit 0
 fi
 
-is_allowed() {
-    local name="$1"
-    for a in "${ALLOWLIST[@]}"; do
-        [[ "$name" == "$a" ]] && return 0
+is_allowed_id() {
+    local id="$1"
+    for a in "${ALLOWLIST_IDS[@]}"; do
+        [[ "$id" == "$a" ]] && return 0
     done
     return 1
 }
 
-check_file() {
-    local f="$1"
-    [[ -f "$f" && -r "$f" ]] || return 0
-    local name
-    name="$(basename "$f")"
-    if grep -q "^enabled=1" "$f" 2>/dev/null; then
-        if is_allowed "$name"; then
-            echo "Allowed:  $name"
+# Scan every section of every .repo file. dnf-4 and dnf-5 differ in filename
+# conventions but the [id] header is stable, so key the allowlist on that.
+shopt -s nullglob
+for f in "$REPOS_DIR"/*.repo; do
+    [[ -r "$f" ]] || continue
+    awk '
+        /^\[.*\]/ { id = substr($0, 2, length($0) - 2); next }
+        /^enabled[[:space:]]*=[[:space:]]*1/ { print id }
+    ' "$f" | while read -r id; do
+        # We want enabled IDs that are NOT base Fedora repos. Base Fedora
+        # ids look like "fedora", "updates", "fedora-cisco-openh264" etc.
+        # COPRs and third-party always have ":" or "_copr" or known names.
+        case "$id" in
+            fedora|fedora-debuginfo|fedora-source|\
+            updates|updates-debuginfo|updates-source|\
+            updates-testing|updates-testing-debuginfo|updates-testing-source|\
+            fedora-cisco-openh264|google-chrome|rpmfusion-*)
+                continue
+                ;;
+        esac
+        if is_allowed_id "$id"; then
+            echo "Allowed:  $id (in $(basename "$f"))"
         else
-            echo "ENABLED:  $name"
-            ENABLED+=("$name")
+            echo "ENABLED:  $id (in $(basename "$f"))"
+            ENABLED+=("$id")
         fi
-    else
-        echo "Disabled: $name"
-    fi
-}
-
-# COPR repos (both standard and non-standard names)
-for repo in "$REPOS_DIR"/_copr:copr.fedorainfracloud.org:*.repo "$REPOS_DIR"/_copr_*.repo; do
-    [[ -f "$repo" ]] && check_file "$repo"
-done
-
-# Third-party repos we know we add
-for repo_name in tailscale.repo; do
-    [[ -f "$REPOS_DIR/$repo_name" ]] && check_file "$REPOS_DIR/$repo_name"
+    done
 done
 
 if [[ ${#ENABLED[@]} -gt 0 ]]; then
-    echo "VALIDATION FAILED: the following repos are still enabled:"
+    echo "VALIDATION FAILED: the following repo IDs are still enabled:"
     for r in "${ENABLED[@]}"; do
         echo "  - $r"
     done

@@ -292,9 +292,9 @@ setup-syncthing:
     bb_header "setup-syncthing"
     bb_step "enabling user syncthing.service"
     systemctl --user enable --now syncthing.service || bb_warn "could not enable user unit"
-    bb_step "opening firewall ports 22000/tcp and 21027/udp"
-    sudo firewall-cmd --add-port=22000/tcp --permanent || bb_warn "firewall: 22000/tcp"
-    sudo firewall-cmd --add-port=21027/udp --permanent || bb_warn "firewall: 21027/udp"
+    bb_step "opening firewall ports 22000/tcp and 21027/udp (FedoraWorkstation zone)"
+    sudo firewall-cmd --zone=FedoraWorkstation --add-port=22000/tcp --permanent || bb_warn "firewall: 22000/tcp"
+    sudo firewall-cmd --zone=FedoraWorkstation --add-port=21027/udp --permanent || bb_warn "firewall: 21027/udp"
     sudo firewall-cmd --reload || bb_warn "firewall reload failed"
     bb_ok "syncthing setup complete"
 

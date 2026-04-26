@@ -10,9 +10,9 @@ mkdir -p "$(dirname "$marker")"
 
 bb_header "first-boot setup"
 
-# Add Flathub remote; on failure (no network yet) skip the install loop —
-# `set -eu` would otherwise abort before writing the marker, causing retry
-# on every login.
+# Add Flathub remote; on failure (no network yet) skip the install loop and
+# do NOT write the marker — the user can retry from the next login.
+network_ok=0
 if gum spin --title "adding flathub remote" -- \
         flatpak remote-add --if-not-exists --user flathub /etc/flatpak/remotes.d/flathub.flatpakrepo; then
     while IFS= read -r ref; do
@@ -21,12 +21,13 @@ if gum spin --title "adding flathub remote" -- \
             flatpak install --user --noninteractive --or-update flathub "$ref" || \
             bb_warn "skipped $ref"
     done < /usr/share/blueberry/flatpaks.list
+    network_ok=1
 else
     bb_warn "flathub remote-add failed (no network?); skipping flatpak install"
 fi
 
-# Symlink EasyEffects preset + convolver IR into the Flatpak sandbox config
-ee_root="$HOME/.var/app/com.github.wwmm.easyeffects/config/easyeffects"
+# Symlink EasyEffects preset + convolver IR into the native (RPM) config dir.
+ee_root="$HOME/.config/easyeffects"
 mkdir -p "$ee_root/output" "$ee_root/irs"
 ln -sf /etc/blueberry/easyeffects/cab-fw.json "$ee_root/output/cab-fw.json"
 ln -sf /etc/blueberry/easyeffects/irs/IR_22ms_27dB_5t_15s_0c.irs \
@@ -53,5 +54,11 @@ if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
         bb_warn "brew bundle had issues"
 fi
 
-touch "$marker"
-bb_ok "first-boot complete"
+# Only mark complete if network-dependent steps actually ran; otherwise
+# leave the marker absent so the next login retries.
+if [ "$network_ok" = 1 ]; then
+    touch "$marker"
+    bb_ok "first-boot complete"
+else
+    bb_warn "first-boot incomplete (no network); will retry next login"
+fi

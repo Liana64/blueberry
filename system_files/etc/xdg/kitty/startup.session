@@ -1,0 +1,8 @@
+# Blueberry kitty startup session — 7 tabs (home/dev/ai/mon/ctl/rmt/perf)
+launch --type=tab --tab-title=home
+launch --type=tab --tab-title=dev
+launch --type=tab --tab-title=ai
+launch --type=tab --tab-title=mon
+launch --type=tab --tab-title=ctl
+launch --type=tab --tab-title=rmt
+launch --type=tab --tab-title=perf

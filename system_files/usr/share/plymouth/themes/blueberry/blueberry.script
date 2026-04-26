@@ -26,20 +26,20 @@ fun message_callback(text) {
 Plymouth.SetMessageFunction(message_callback);
 
 // LUKS / sudo password prompts
-prompt.sprite = Sprite();
+password.sprite = Sprite();
 fun display_password_callback(prompt, bullets) {
     line = prompt + "  ";
     i = 0;
     while (i < bullets) { line += "*"; i++; }
     img = Image.Text(line, 0.984, 0.945, 0.780, 1, "Sans 14");
-    prompt.sprite.SetImage(img);
-    prompt.sprite.SetX(Window.GetWidth()  / 2 - img.GetWidth() / 2);
-    prompt.sprite.SetY(Window.GetHeight() / 2 + status.y_off + 32);
+    password.sprite.SetImage(img);
+    password.sprite.SetX(Window.GetWidth()  / 2 - img.GetWidth() / 2);
+    password.sprite.SetY(Window.GetHeight() / 2 + status.y_off + 32);
 }
 Plymouth.SetDisplayPasswordFunction(display_password_callback);
 
 fun display_normal_callback() {
-    prompt.sprite.SetImage(NULL);
+    password.sprite.SetImage(NULL);
 }
 Plymouth.SetDisplayNormalFunction(display_normal_callback);
 

@@ -1,13 +1,12 @@
 [Unit]
 Description=Set Framework battery charge limit to 80%
 After=multi-user.target
-# Skip on hardware without this knob (VMs, non-Framework, BAT-index changes).
-ConditionPathExists=/sys/class/power_supply/BAT1/charge_control_end_threshold
 
 [Service]
 Type=oneshot
 RemainAfterExit=true
-ExecStart=/bin/sh -c 'echo 80 > /sys/class/power_supply/BAT1/charge_control_end_threshold'
+# Iterate all batteries; skip ones without the knob (VMs, non-Framework).
+ExecStart=/bin/sh -c 'set -e; matched=0; for f in /sys/class/power_supply/BAT*/charge_control_end_threshold; do [ -w "$f" ] || continue; echo 80 > "$f"; matched=1; done; [ "$matched" = 1 ] || exit 0'
 # Tolerate battery-driver init race after multi-user.target.
 Restart=on-failure
 RestartSec=5s
