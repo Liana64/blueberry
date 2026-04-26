@@ -51,28 +51,6 @@ assemble-distrobox:
     distrobox assemble create --file /usr/share/blueberry/distrobox/distrobox.ini
     bb_ok "distrobox ready"
 
-# Set the Framework charge end-threshold (60-100). Persists across resume via systemd unit.
-[group('Hardware')]
-framework-charge-limit:
-    #!/usr/bin/env bash
-    set -eu
-    . /usr/lib/blueberry/gum-theme.sh
-    bb_header "framework-charge-limit"
-    f=/sys/class/power_supply/BAT1/charge_control_end_threshold
-    if [ ! -w "$f" ] && [ ! -e "$f" ]; then
-        bb_err "charge_control_end_threshold not present — is this a Framework?"
-        exit 1
-    fi
-    cur="$(cat "$f" 2>/dev/null || echo "?")"
-    bb_step "current limit: ${cur}%"
-    new="$(gum input --placeholder "60-100" --prompt "new charge limit %: ")"
-    if ! [[ "$new" =~ ^[0-9]+$ ]] || [ "$new" -lt 60 ] || [ "$new" -gt 100 ]; then
-        bb_err "value must be an integer in 60-100"
-        exit 1
-    fi
-    echo "$new" | sudo tee "$f" >/dev/null
-    bb_ok "charge limit: ${cur}% → ${new}%"
-
 # Layer xdg-desktop-portal-wlr for screencasting (Vesktop/Zoom screen share)
 [group('Toggles')]
 enable-screencast:
