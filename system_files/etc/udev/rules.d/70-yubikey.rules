@@ -1,0 +1,3 @@
+# Yubikey U2F + OTP
+SUBSYSTEM=="usb", ATTRS{idVendor}=="1050", ATTRS{idProduct}=="0010|0110|0111|0114|0116|0120|0200|0211|0401|0402|0403|0404|0405|0406|0407|0410", TAG+="uaccess", GROUP="wheel", MODE="0660"
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", TAG+="uaccess", GROUP="wheel", MODE="0660"
