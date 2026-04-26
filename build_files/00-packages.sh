@@ -96,14 +96,13 @@ FEDORA_PACKAGES=(
     fortune-mod
     fzf
     git-delta
-    lazygit
     procs
     ripgrep
     zoxide
 
     # general system / build tools
     age
-    gptfdisk
+    gdisk
     gum
     ImageMagick
     ffmpeg-free
@@ -112,7 +111,6 @@ FEDORA_PACKAGES=(
     pciutils
     pre-commit
     shellcheck
-    sops
     traceroute
     unzip
     usbutils

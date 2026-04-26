@@ -16,6 +16,10 @@ brew "cilium-cli"
 # automation / secrets
 brew "ansible"
 brew "bitwarden-cli"
+brew "sops"
+
+# git ergonomics
+brew "lazygit"
 
 # language servers (nvim)
 brew "lua-language-server"

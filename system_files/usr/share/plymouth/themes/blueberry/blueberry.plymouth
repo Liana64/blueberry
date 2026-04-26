@@ -4,5 +4,4 @@ Description=Blueberry boot splash
 ModuleName=script
 
 [script]
-ImageDir=/usr/share/plymouth/themes/blueberry
 ScriptFile=/usr/share/plymouth/themes/blueberry/blueberry.script

@@ -1,7 +1,47 @@
-logo.image = Image("logo.png");
-logo.sprite = Sprite(logo.image);
-logo.sprite.SetX(Window.GetWidth() / 2 - logo.image.GetWidth() / 2);
-logo.sprite.SetY(Window.GetHeight() / 2 - logo.image.GetHeight() / 2);
+// Text-only splash. Groove palette:
+//   bg     #181818 -> (0.094, 0.094, 0.094)
+//   accent #7daea3 -> (0.490, 0.682, 0.639)
+//   fg     #fbf1c7 -> (0.984, 0.945, 0.780)
+//   muted  #928374 -> (0.573, 0.514, 0.455)
+
+Window.SetBackgroundTopColor(0.094, 0.094, 0.094);
+Window.SetBackgroundBottomColor(0.094, 0.094, 0.094);
+
+// Centered title
+title.image  = Image.Text("blueberry", 0.490, 0.682, 0.639, 1, "Sans Bold 32");
+title.sprite = Sprite(title.image);
+title.sprite.SetX(Window.GetWidth()  / 2 - title.image.GetWidth()  / 2);
+title.sprite.SetY(Window.GetHeight() / 2 - title.image.GetHeight() / 2);
+
+// Status message line below the title
+status.sprite = Sprite();
+status.y_off  = title.image.GetHeight() + 12;
+
+fun message_callback(text) {
+    img = Image.Text(text, 0.984, 0.945, 0.780, 1, "Sans 12");
+    status.sprite.SetImage(img);
+    status.sprite.SetX(Window.GetWidth()  / 2 - img.GetWidth() / 2);
+    status.sprite.SetY(Window.GetHeight() / 2 + status.y_off);
+}
+Plymouth.SetMessageFunction(message_callback);
+
+// LUKS / sudo password prompts
+prompt.sprite = Sprite();
+fun display_password_callback(prompt, bullets) {
+    line = prompt + "  ";
+    i = 0;
+    while (i < bullets) { line += "*"; i++; }
+    img = Image.Text(line, 0.984, 0.945, 0.780, 1, "Sans 14");
+    prompt.sprite.SetImage(img);
+    prompt.sprite.SetX(Window.GetWidth()  / 2 - img.GetWidth() / 2);
+    prompt.sprite.SetY(Window.GetHeight() / 2 + status.y_off + 32);
+}
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+
+fun display_normal_callback() {
+    prompt.sprite.SetImage(NULL);
+}
+Plymouth.SetDisplayNormalFunction(display_normal_callback);
 
 fun refresh_callback() { }
 Plymouth.SetRefreshFunction(refresh_callback);

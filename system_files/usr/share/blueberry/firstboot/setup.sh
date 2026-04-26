@@ -22,11 +22,13 @@ while IFS= read -r ref; do
         bb_warn "skipped $ref"
 done < /usr/share/blueberry/flatpaks.list
 
-# Symlink EasyEffects preset into the Flatpak sandbox config
-ee_dir="$HOME/.var/app/com.github.wwmm.easyeffects/config/easyeffects/output"
-mkdir -p "$ee_dir"
-ln -sf /etc/blueberry/easyeffects/cab-fw.json "$ee_dir/cab-fw.json"
-bb_step "easyeffects preset linked"
+# Symlink EasyEffects preset + convolver IR into the Flatpak sandbox config
+ee_root="$HOME/.var/app/com.github.wwmm.easyeffects/config/easyeffects"
+mkdir -p "$ee_root/output" "$ee_root/irs"
+ln -sf /etc/blueberry/easyeffects/cab-fw.json "$ee_root/output/cab-fw.json"
+ln -sf /etc/blueberry/easyeffects/irs/IR_22ms_27dB_5t_15s_0c.irs \
+    "$ee_root/irs/IR_22ms_27dB_5t_15s_0c.irs"
+bb_step "easyeffects preset + IR linked"
 
 # Switch login shell to zsh
 if [ -x /usr/bin/zsh ] && [ "$(getent passwd "$USER" | cut -d: -f7)" != "/usr/bin/zsh" ]; then
