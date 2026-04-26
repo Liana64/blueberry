@@ -265,3 +265,61 @@ fix-flatpak-permissions:
     bb_header "fix-flatpak-permissions"
     gum spin --title "flatpak repair --user" -- flatpak repair --user || bb_warn "flatpak repair reported issues"
     bb_ok "flatpak user installation repaired"
+
+# Configure WireGuard tunnels and trusted-network list (writes /etc/blueberry/wireguard/)
+[group('Setup')]
+setup-wireguard:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "setup-wireguard"
+    bb_warn "stub — full implementation tracked in TODO"
+    bb_step "expected layout: /etc/blueberry/wireguard/{wg0.conf,trusted-networks}"
+    exit 0
+
+# Enable the user Syncthing service and open firewall ports 22000/tcp + 21027/udp
+[group('Setup')]
+setup-syncthing:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "setup-syncthing"
+    bb_step "enabling user syncthing.service"
+    systemctl --user enable --now syncthing.service || bb_warn "could not enable user unit"
+    bb_step "opening firewall ports 22000/tcp and 21027/udp"
+    sudo firewall-cmd --add-port=22000/tcp --permanent || bb_warn "firewall: 22000/tcp"
+    sudo firewall-cmd --add-port=21027/udp --permanent || bb_warn "firewall: 21027/udp"
+    sudo firewall-cmd --reload || bb_warn "firewall reload failed"
+    bb_ok "syncthing setup complete"
+
+# Generate a USBGuard policy from currently-attached devices and install it
+[group('Setup')]
+setup-usbguard:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "setup-usbguard"
+    if ! command -v usbguard >/dev/null; then
+        bb_err "usbguard not installed"
+        exit 1
+    fi
+    bb_warn "this captures every USB device currently attached as 'allowed'"
+    if ! gum confirm "Generate policy from current devices?"; then
+        bb_warn "cancelled"
+        exit 0
+    fi
+    sudo sh -c 'usbguard generate-policy > /etc/usbguard/rules.conf'
+    sudo chmod 0600 /etc/usbguard/rules.conf
+    sudo systemctl restart usbguard.service || bb_warn "usbguard restart failed"
+    bb_ok "usbguard policy installed at /etc/usbguard/rules.conf"
+
+# Enroll a YubiKey for U2F login (writes ~/.config/Yubico/u2f_keys)
+[group('Setup')]
+enroll-yubikey:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "enroll-yubikey"
+    bb_warn "stub — full implementation tracked in TODO"
+    bb_step "expected flow: pamu2fcfg >> ~/.config/Yubico/u2f_keys"
+    exit 0
