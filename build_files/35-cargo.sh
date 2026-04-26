@@ -17,15 +17,11 @@ work=$(mktemp -d)
 export CARGO_HOME="$work/cargo-home"
 mkdir -p "$CARGO_HOME"
 
-# tealdeer    — Rust tldr client (not in F43 repos)
-# autotiling-rs — Rust port of autotiling for sway/i3
-cargo install --locked --root "$work" tealdeer autotiling-rs
+# tealdeer — Rust tldr client (not in F43 repos)
+cargo install --locked --root "$work" tealdeer
 
-install -m 0755 "$work/bin/tldr"          /usr/bin/tldr
-install -m 0755 "$work/bin/autotiling-rs" /usr/bin/autotiling-rs
-
-# Strip debuginfo to keep the layer small
-strip /usr/bin/tldr /usr/bin/autotiling-rs || true
+install -m 0755 "$work/bin/tldr" /usr/bin/tldr
+strip /usr/bin/tldr || true
 
 # Remove the toolchain so it's not in the final image
 dnf -y remove cargo rust
