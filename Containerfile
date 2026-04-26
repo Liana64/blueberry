@@ -3,16 +3,12 @@ FROM scratch AS ctx
 COPY build_files /
 
 # Base Image
-FROM ghcr.io/ublue-os/bazzite:stable
+FROM ghcr.io/ublue-os/base-main:stable
 
-## Other possible base images include:
-# FROM ghcr.io/ublue-os/bazzite:latest
-# FROM ghcr.io/ublue-os/bluefin-nvidia:stable
-# 
-# ... and so on, here are more base images
-# Universal Blue Images: https://github.com/orgs/ublue-os/packages
-# Fedora base image: quay.io/fedora/fedora-bootc:41
-# CentOS base images: quay.io/centos-bootc/centos-bootc:stream10
+LABEL org.opencontainers.image.title="blueberry"
+LABEL org.opencontainers.image.description="Opinionated atomic Fedora image for Framework AMD AI 300 laptops"
+LABEL org.opencontainers.image.source="https://github.com/liana64/blueberry"
+LABEL org.opencontainers.image.licenses="Apache-2.0"
 
 ### [IM]MUTABLE /opt
 ## Some bootable images, like Fedora, have /opt symlinked to /var/opt, in order to
@@ -24,6 +20,9 @@ FROM ghcr.io/ublue-os/bazzite:stable
 ## by the package manager.
 
 # RUN rm /opt && mkdir /opt
+
+# System files: copy the entire tree verbatim onto the image
+COPY system_files/ /
 
 ### MODIFICATIONS
 ## make modifications desired in your image and install packages by modifying the build.sh script
