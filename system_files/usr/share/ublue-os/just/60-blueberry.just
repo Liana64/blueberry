@@ -162,9 +162,7 @@ enroll-fido2:
     bb_ok "FIDO2 token enrolled"
 
 # Generate and enroll Secure Boot keys, then sign the running deployment.
-# Layers sbctl on first run; reboot once after enrollment so firmware
-
-# picks up the new keys.
+# Layers sbctl on first run; reboot once after enrollment so firmware picks up the new keys.
 enroll-secure-boot:
     #!/usr/bin/env bash
     set -eu

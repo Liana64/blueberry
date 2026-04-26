@@ -4,13 +4,10 @@ echo "::group:: ===$(basename "$0")==="
 
 set -eoux pipefail
 
-# Activate plymouth theme
 plymouth-set-default-theme blueberry
 
-# os-release
 # Keep ID=fedora so bootc-image-builder (and other distro-aware tooling)
-# recognise this as Fedora and find their built-in def files. Use
-# VARIANT_ID for blueberry-specific detection.
+# recognise this as Fedora. Use VARIANT_ID for blueberry-specific detection.
 fedora_ver="$(rpm -E %fedora)"
 cat > /etc/os-release <<EOF
 NAME="Blueberry"

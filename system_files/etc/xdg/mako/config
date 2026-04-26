@@ -1,13 +1,8 @@
-# /etc/xdg/mako/config — Blueberry system mako notification config.
 # Ported from ~/.dotfiles/home/linux/mako.nix.
-# Format: INI (key=value), see mako(5) — https://man.archlinux.org/man/mako.5
 #
-# Font note: JetBrainsMono Nerd Font is preferred but Fedora F43 has no
-# RPM for it; cascadia-mono-nf-fonts is shipped by the image as the
-# nearest mono nerd fallback. Pango font strings cannot list multiple
-# families, so we keep the JetBrainsMono name and rely on fontconfig
-# substitution to fall back to Cascadia Mono NF when JetBrainsMono is
-# missing. (See /etc/fonts/conf.d/ for the system fontconfig stack.)
+# Pango font strings can't list fallbacks, so keep "JetBrainsMono Nerd
+# Font" and rely on fontconfig to substitute cascadia-mono-nf-fonts
+# (Fedora F43 has no JetBrainsMono NF RPM).
 
 default-timeout=3000
 ignore-timeout=false

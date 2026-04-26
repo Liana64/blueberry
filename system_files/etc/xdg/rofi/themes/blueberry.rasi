@@ -1,7 +1,5 @@
-/* /etc/xdg/rofi/themes/blueberry.rasi — groove palette rofi theme.
- * Ported from ~/.dotfiles/home/linux/rofi.nix (xdg.configFile."rofi/config.rasi").
- * Hex literals substituted from modules/common/colors/groove.nix.
- */
+/* Groove palette rofi theme; ported from ~/.dotfiles/home/linux/rofi.nix
+ * (hex from modules/common/colors/groove.nix). */
 
 * {
     font:           "JetBrainsMono Nerd Font 12";

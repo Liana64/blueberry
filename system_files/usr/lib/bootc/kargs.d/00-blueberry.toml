@@ -1,6 +1,5 @@
 # Framework AMD AI 300-series workarounds. Without these, the screen
 # flickers under load and the GPU intermittently freezes.
-#
 kargs = [
     "amdgpu.sg_display=0",
     "amdgpu.dcdebugmask=0x10",

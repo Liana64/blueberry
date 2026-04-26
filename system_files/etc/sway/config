@@ -1,16 +1,6 @@
-# /etc/sway/config — Blueberry system-wide sway config.
 # Ported from ~/.dotfiles/home/linux/sway.nix (groove palette).
-#
-# User-level overrides go in ~/.config/sway/config.d/*.conf or in
-# /etc/sway/config.d/*.conf (drop-in directory; included at end).
-#
-# Notes on what is NOT in this file:
-#   * Wayland session env vars (XDG_SESSION_TYPE, MOZ_ENABLE_WAYLAND,
-#     QT_QPA_PLATFORM, GDK_SCALE, ELECTRON_OZONE_PLATFORM_HINT, ...) and
-#     the home.pointerCursor block belong in /etc/environment / GTK
-#     settings (deferred to a separate gap-fill lane).
-#   * Screenshot helpers (sway-screenshot-all/area) and nix-rebuild-sway
-#     are NixOS-specific; we use inline grim/slurp keybinds instead.
+# Overrides: ~/.config/sway/config.d/*.conf or /etc/sway/config.d/*.conf
+# (drop-in dir included at end). Wayland env vars live in /etc/environment.
 
 ### Colors (groove palette — see modules/common/colors/groove.nix) ###
 set $bg-color            #282828

@@ -1,10 +1,6 @@
-/* /etc/xdg/waybar/style.css — Blueberry system waybar styling.
- * Ported from ~/.dotfiles/home/linux/waybar.nix (groove palette).
- *
- * Font order: JetBrainsMono Nerd Font (preferred — Fedora has no nerd
- * variant in F43 repos yet, see build_files/00-packages.sh) then
- * Cascadia Mono NF (cascadia-mono-nf-fonts RPM, the closest mono nerd
- * font Fedora ships) then plain JetBrains Mono.
+/* Ported from ~/.dotfiles/home/linux/waybar.nix (groove palette).
+ * Font fallback chain: JetBrainsMono NF (preferred, no F43 RPM) →
+ * Cascadia Mono NF (closest nerd mono Fedora ships) → JetBrains Mono.
  */
 
 * {

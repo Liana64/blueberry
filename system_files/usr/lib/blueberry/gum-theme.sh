@@ -1,6 +1,5 @@
-# Source this file (`. /usr/lib/blueberry/gum-theme.sh`) in any script
-# that uses `gum`. It exports the GUM_* environment variables that style
-# every gum widget consistently with the rest of Blueberry's UI.
+# Source this in any script using `gum`; exports GUM_* env vars to
+# style widgets consistently with Blueberry's UI.
 
 # Palette (matches groove.nix in the user's NixOS dotfiles)
 export _BB_FG='#fbf1c7'        # foreground

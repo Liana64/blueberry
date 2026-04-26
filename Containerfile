@@ -1,8 +1,7 @@
-# Allow build scripts to be referenced without being copied into the final image
+# Build scripts referenced via mount, not copied into final image
 FROM scratch AS ctx
 COPY build_files /
 
-# Base Image
 FROM ghcr.io/ublue-os/base-main:latest
 
 LABEL org.opencontainers.image.title="blueberry"
@@ -10,30 +9,18 @@ LABEL org.opencontainers.image.description="Opinionated atomic Fedora image for 
 LABEL org.opencontainers.image.source="https://github.com/liana64/blueberry"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 
-### [IM]MUTABLE /opt
-## Some bootable images, like Fedora, have /opt symlinked to /var/opt, in order to
-## make it mutable/writable for users. However, some packages write files to this directory,
-## thus its contents might be wiped out when bootc deploys an image, making it troublesome for
-## some packages. Eg, google-chrome, docker-desktop.
-##
-## Uncomment the following line if one desires to make /opt immutable and be able to be used
-## by the package manager.
-
+# Uncomment to make /opt immutable (Fedora symlinks /opt -> /var/opt by
+# default; some packages like google-chrome/docker-desktop write there and
+# get wiped on bootc deploy).
 # RUN rm /opt && mkdir /opt
 
-# System files: copy the entire tree verbatim onto the image
 COPY system_files/ /
-
-### MODIFICATIONS
-## make modifications desired in your image and install packages by modifying the build.sh script
-## the following RUN directive does all the things required to run "build.sh" as recommended.
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/build.sh
-    
-### LINTING
-## Verify final image and contents are correct.
+
+# Verify final image
 RUN bootc container lint

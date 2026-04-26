@@ -1,16 +1,7 @@
-// /etc/xdg/waybar/config.jsonc — Blueberry system waybar config.
 // Ported from ~/.dotfiles/home/linux/waybar.nix.
-//
-// Modules omitted vs. the NixOS source because their helper scripts
-// are not on this image yet (tracked as deferred gap-fill work):
-//   custom/launcher  (no launcher icon helper)
-//   custom/yubikey   (no waybar-yubikey)
-//   custom/syncthing (no waybar-syncthing)
-//   custom/vpn       (no waybar-vpn)
-//   custom/rpm-ostree (spec-listed but no helper yet)
-//
-// Only custom/usbguard is wired up — the helper exists at
-// /usr/lib/blueberry/waybar/waybar-usbguard.
+// Only custom/usbguard is wired up; launcher/yubikey/syncthing/vpn/
+// rpm-ostree modules from the NixOS source are deferred (helper scripts
+// not yet on this image).
 {
     "layer": "top",
     "position": "top",

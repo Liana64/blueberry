@@ -4,9 +4,8 @@ echo "::group:: ===$(basename "$0")==="
 
 set -eoux pipefail
 
-# Packages are split into FEDORA_PACKAGES (bulk install from Fedora repos,
-# safe from COPR injection) and any COPR packages (installed individually
-# via copr_install_isolated). See build_files/copr-helpers.sh.
+# Bulk Fedora repos here; COPR packages go via copr_install_isolated
+# (see copr-helpers.sh) to prevent COPR injection.
 
 FEDORA_PACKAGES=(
     # theming / fonts / cursors (GTK + sway desktop)

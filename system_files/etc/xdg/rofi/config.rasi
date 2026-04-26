@@ -1,7 +1,4 @@
-/* /etc/xdg/rofi/config.rasi — Blueberry system rofi config.
- * Ported from ~/.dotfiles/home/linux/rofi.nix.
- * Theme lives at /etc/xdg/rofi/themes/blueberry.rasi.
- */
+/* Ported from ~/.dotfiles/home/linux/rofi.nix; theme at themes/blueberry.rasi. */
 
 configuration {
     modi:                "drun";
