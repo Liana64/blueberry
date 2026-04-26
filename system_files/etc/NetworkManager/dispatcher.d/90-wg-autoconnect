@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# 90-wg-autoconnect: bring wg0 up when connectivity becomes full
+set -eu
+
+iface="$1"
+event="$2"
+
+if [ "$event" != "connectivity-change" ]; then
+    exit 0
+fi
+
+if [ "${CONNECTIVITY_STATE:-}" = "FULL" ]; then
+    if ! /usr/bin/wg show wg0 >/dev/null 2>&1; then
+        /usr/bin/wg-quick up wg0 || true
+    fi
+else
+    if /usr/bin/wg show wg0 >/dev/null 2>&1; then
+        /usr/bin/wg-quick down wg0 || true
+    fi
+fi
