@@ -20,8 +20,17 @@ mkdir -p "$CARGO_HOME"
 # tealdeer — Rust tldr client (not in F43 repos)
 cargo install --locked --root "$work" tealdeer
 
-install -m 0755 "$work/bin/tldr" /usr/bin/tldr
-strip /usr/bin/tldr || true
+# autotiling-rs — Rust port of autotiling for sway (not on crates.io;
+# pinned commit on ammgws/autotiling-rs)
+AUTOTILING_RS_REF="59cefd205247aea03d7e7fa26b878deef3b454de"
+cargo install --locked --root "$work" \
+    --git https://github.com/ammgws/autotiling-rs.git \
+    --rev "$AUTOTILING_RS_REF" \
+    autotiling-rs
+
+install -m 0755 "$work/bin/tldr"          /usr/bin/tldr
+install -m 0755 "$work/bin/autotiling-rs" /usr/bin/autotiling-rs
+strip /usr/bin/tldr /usr/bin/autotiling-rs || true
 
 # Remove the toolchain so it's not in the final image
 dnf -y remove cargo rust
