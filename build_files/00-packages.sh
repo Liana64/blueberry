@@ -148,6 +148,10 @@ FEDORA_PACKAGES=(
     google-noto-fonts-common
     google-noto-emoji-fonts
     jetbrains-mono-fonts-all
+    # Nerd Font for waybar/sway icon glyphs (Fedora has no jetbrains-mono
+    # nerd variant in F43 repos; cascadia-mono-nf is the closest mono nerd
+    # font Fedora actually ships).
+    cascadia-mono-nf-fonts
 
     # boot splash
     plymouth
