@@ -25,9 +25,7 @@ FEDORA_PACKAGES=(
     greetd
     greetd-tuigreet
     polkit
-    # PolicyKit auth agent for sway. hyprpolkitagent replaces polkit-gnome
-    # so we don't drag in half of GNOME for one libexec binary.
-    hyprpolkitagent
+    polkit-gnome
 
     # sway desktop
     sway
