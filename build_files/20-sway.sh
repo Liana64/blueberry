@@ -1,4 +1,10 @@
-#!/usr/bin/env bash
-set -ouex pipefail
-. /ctx/lib.sh
-log "TODO: 20-sway.sh"
+#!/usr/bin/bash
+
+echo "::group:: ===$(basename "$0")==="
+
+set -eoux pipefail
+
+# Sway-specific tweaks not handled by system_files COPY land here.
+# (currently empty — sway config ships verbatim under system_files/)
+
+echo "::endgroup::"

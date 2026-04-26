@@ -1,13 +1,11 @@
-#!/usr/bin/env bash
-set -ouex pipefail
+#!/usr/bin/bash
+set -eoux pipefail
 
-. /ctx/lib.sh
-
-log "Starting Blueberry image build"
-
+# Run each numbered build shard in order. Each shard wraps its work in
+# `::group::` markers so the GitHub Actions log stays readable.
 for script in /ctx/[0-9]*.sh; do
-    log "==> $(basename "$script")"
     "$script"
 done
 
-log "Build complete"
+# Final guard: make sure no third-party / COPR repo is left enabled.
+/ctx/validate-repos.sh

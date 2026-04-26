@@ -1,0 +1,28 @@
+# Per-user dev tooling installed via Homebrew at firstboot.
+# Update with `brew bundle --file=/usr/share/blueberry/Brewfile`.
+
+# kubernetes / cluster ops
+brew "kubectl"
+brew "helm"
+brew "k9s"
+brew "kubeconform"
+brew "fluxcd/tap/flux"
+tap  "siderolabs/tap"
+brew "siderolabs/tap/talosctl"
+tap  "budimanjojo/tap"
+brew "budimanjojo/tap/talhelper"
+brew "cilium-cli"
+
+# automation / secrets
+brew "ansible"
+brew "bitwarden-cli"
+
+# language servers (nvim)
+brew "lua-language-server"
+brew "rust-analyzer"
+brew "yaml-language-server"
+brew "marksman"
+
+# misc cli
+brew "hexyl"
+brew "watchexec"

@@ -1,0 +1,26 @@
+#!/usr/bin/bash
+# Source via: . /ctx/copr-helpers.sh
+#
+# Install packages from a COPR without leaving the COPR globally enabled,
+# which prevents a malicious COPR from shadowing Fedora packages on later
+# `dnf install` calls.
+
+set -euo pipefail
+
+copr_install_isolated() {
+    local copr_name="$1"
+    shift
+    local packages=("$@")
+
+    if [[ ${#packages[@]} -eq 0 ]]; then
+        echo "ERROR: No packages specified for copr_install_isolated" >&2
+        return 1
+    fi
+
+    local repo_id="copr:copr.fedorainfracloud.org:${copr_name//\//:}"
+
+    echo "Installing ${packages[*]} from COPR $copr_name (isolated)"
+    dnf -y copr enable "$copr_name"
+    dnf -y copr disable "$copr_name"
+    dnf -y install --enablerepo="$repo_id" "${packages[@]}"
+}

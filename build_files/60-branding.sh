@@ -1,7 +1,8 @@
-#!/usr/bin/env bash
-set -ouex pipefail
-. /ctx/lib.sh
-log "Branding"
+#!/usr/bin/bash
+
+echo "::group:: ===$(basename "$0")==="
+
+set -eoux pipefail
 
 # Activate plymouth theme
 plymouth-set-default-theme blueberry
@@ -17,3 +18,5 @@ VARIANT="Atomic"
 VARIANT_ID=atomic
 HOME_URL="https://github.com/liana64/blueberry"
 EOF
+
+echo "::endgroup::"

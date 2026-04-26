@@ -1,30 +1,33 @@
-#!/usr/bin/env bash
-set -ouex pipefail
-. /ctx/lib.sh
-log "Enabling/disabling system units"
+#!/usr/bin/bash
+
+echo "::group:: ===$(basename "$0")==="
+
+set -eoux pipefail
 
 # Audit (anomaly mode)
-enable_unit auditd.service
+systemctl enable auditd.service
 
 # USBGuard + companions for USB automount once authorized
-enable_unit usbguard.service
-enable_unit usbguard-dbus.service
-enable_unit udisks2.service
+systemctl enable usbguard.service
+systemctl enable usbguard-dbus.service
+systemctl enable udisks2.service
 
 # Firewall + time
-enable_unit firewalld.service
-enable_unit chronyd.service
+systemctl enable firewalld.service
+systemctl enable chronyd.service
 
 # Login manager: greetd replaces gdm
-enable_unit greetd.service
+systemctl enable greetd.service
 systemctl set-default graphical.target
-disable_unit gdm.service
-mask_unit gdm.service
+systemctl disable gdm.service || true
+systemctl mask gdm.service
 
 # Hardware
-enable_unit framework-charge-limit.service
-enable_unit lock-before-sleep.service
-enable_unit pcscd.service
+systemctl enable framework-charge-limit.service
+systemctl enable lock-before-sleep.service
+systemctl enable pcscd.service
 
 # Bluetooth disabled at boot; waybar toggle re-enables
-disable_unit bluetooth.service
+systemctl disable bluetooth.service || true
+
+echo "::endgroup::"
