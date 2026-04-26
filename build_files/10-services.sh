@@ -8,13 +8,21 @@ set -eoux pipefail
 systemctl enable auditd.service
 
 # USBGuard + companions for USB automount once authorized
+# (usbguard.service handles its own D-Bus integration; no separate
+#  usbguard-dbus.service ships in the Fedora package.)
 systemctl enable usbguard.service
-systemctl enable usbguard-dbus.service
 systemctl enable udisks2.service
 
 # Firewall + time
 systemctl enable firewalld.service
 systemctl enable chronyd.service
+
+# Storage health
+systemctl enable fstrim.timer
+systemctl enable smartd.service
+
+# Power management (NixOS uses power-profiles-daemon, not TLP)
+systemctl enable power-profiles-daemon.service
 
 # Login manager: greetd replaces gdm
 systemctl enable greetd.service

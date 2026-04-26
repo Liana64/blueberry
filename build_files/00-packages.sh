@@ -43,6 +43,8 @@ FEDORA_PACKAGES=(
     pavucontrol
     gnome-keyring
     libnotify
+    xdg-desktop-portal
+    xdg-desktop-portal-gtk
     syncthing
     nmap
     nmap-ncat
@@ -67,6 +69,8 @@ FEDORA_PACKAGES=(
     fprintd
     bolt
     ddcutil
+    power-profiles-daemon
+    upower
 
     # smartcards / yubikey
     pcsc-lite
