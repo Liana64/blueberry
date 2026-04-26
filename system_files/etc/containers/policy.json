@@ -1,0 +1,14 @@
+{
+    "default": [{"type": "insecureAcceptAnything"}],
+    "transports": {
+        "docker": {
+            "ghcr.io/liana64/blueberry": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/blueberry-cosign.pub",
+                    "signedIdentity": {"type": "matchRepository"}
+                }
+            ]
+        }
+    }
+}
