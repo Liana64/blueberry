@@ -1,17 +1,18 @@
 # Builder stage for Rust binaries — toolchain stays out of the final image.
-# CARGO_HOME is overridden because base-main pre-creates /root/.cargo as a
-# non-directory entry that cargo refuses to overwrite.
+# CARGO_HOME and --root paths land under /var/tmp because base-main
+# pre-creates /root/.cargo and /opt as non-directory entries that cargo
+# refuses to overwrite.
 FROM ghcr.io/ublue-os/base-main:latest AS rust-builder
 ARG AUTOTILING_RS_REF=59cefd205247aea03d7e7fa26b878deef3b454de
 ENV CARGO_HOME=/var/tmp/cargo-home
 RUN dnf -y install cargo rust binutils git \
  && mkdir -p "$CARGO_HOME" \
- && cargo install --locked --root /opt/cargo-out tealdeer \
- && cargo install --locked --root /opt/cargo-out \
+ && cargo install --locked --root /var/tmp/cargo-out tealdeer \
+ && cargo install --locked --root /var/tmp/cargo-out \
         --git https://github.com/ammgws/autotiling-rs.git \
         --rev "${AUTOTILING_RS_REF}" \
         autotiling-rs \
- && strip /opt/cargo-out/bin/tldr /opt/cargo-out/bin/autotiling-rs
+ && strip /var/tmp/cargo-out/bin/tldr /var/tmp/cargo-out/bin/autotiling-rs
 
 # Build scripts referenced via mount, not copied into final image
 FROM scratch AS ctx
@@ -30,8 +31,8 @@ LABEL org.opencontainers.image.licenses="Apache-2.0"
 # RUN rm /opt && mkdir /opt
 
 COPY system_files/ /
-COPY --from=rust-builder /opt/cargo-out/bin/tldr          /usr/bin/tldr
-COPY --from=rust-builder /opt/cargo-out/bin/autotiling-rs /usr/bin/autotiling-rs
+COPY --from=rust-builder /var/tmp/cargo-out/bin/tldr          /usr/bin/tldr
+COPY --from=rust-builder /var/tmp/cargo-out/bin/autotiling-rs /usr/bin/autotiling-rs
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
