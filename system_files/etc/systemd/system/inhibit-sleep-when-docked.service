@@ -1,7 +1,13 @@
 [Unit]
 Description=Inhibit suspend while CalDigit TS4 is docked
-StopWhenUnneeded=yes
+# Lifecycle is managed entirely by 70-caldigit-ts4.rules: udev `add` triggers
+# SYSTEMD_WANTS=, `remove` runs `systemctl stop`. No StopWhenUnneeded needed —
+# nothing else `Wants=` this unit, so it would never trigger anyway.
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/systemd-inhibit --what=sleep --who=blueberry --why="Docked to TS4" --mode=block /usr/libexec/blueberry/dock-monitor.sh
+# `sleep:handle-lid-switch` also blocks lid-close suspend, which logind's
+# HandleLidSwitchDocked=ignore only covers when ACPI reports a dock —
+# TS4 doesn't always assert that bit, so we belt-and-braces it here.
+ExecStart=/usr/bin/systemd-inhibit --what=sleep:handle-lid-switch --who=blueberry --why="Docked to TS4" --mode=block /usr/libexec/blueberry/dock-monitor.sh
+Restart=on-failure

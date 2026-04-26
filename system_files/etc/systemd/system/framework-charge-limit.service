@@ -1,11 +1,21 @@
 [Unit]
 Description=Set Framework battery charge limit to 80%
 After=multi-user.target
+# Skip on hardware that doesn't expose this knob (VMs, non-Framework laptops,
+# future Framework revisions where the BAT index changes). With no condition,
+# the unit fails on every non-Framework host and shows up in `systemctl --failed`.
+ConditionPathExists=/sys/class/power_supply/BAT1/charge_control_end_threshold
 
 [Service]
 Type=oneshot
 RemainAfterExit=true
 ExecStart=/bin/sh -c 'echo 80 > /sys/class/power_supply/BAT1/charge_control_end_threshold'
+# Tolerate the rare race where the battery driver finishes initialising just
+# after multi-user.target. Three retries spaced 5s apart is plenty; if it's
+# still failing after that, the hardware genuinely doesn't expose the knob.
+Restart=on-failure
+RestartSec=5s
+StartLimitBurst=3
 
 [Install]
 WantedBy=multi-user.target

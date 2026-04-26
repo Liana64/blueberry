@@ -26,6 +26,9 @@ FEDORA_PACKAGES=(
     greetd
     greetd-tuigreet
     polkit
+    # PolicyKit auth agent for sway. hyprpolkitagent replaces polkit-gnome
+    # so we don't drag in half of GNOME for one libexec binary.
+    hyprpolkitagent
 
     # sway desktop
     sway
@@ -88,6 +91,10 @@ FEDORA_PACKAGES=(
     util-linux-user
     tmux
     direnv
+
+    # terminal (used by sway's startup session and the first-boot welcome
+    # window, before any user dotfiles have been deployed)
+    kitty
 
     # shell ergonomics (referenced by aliases / zsh init)
     bat

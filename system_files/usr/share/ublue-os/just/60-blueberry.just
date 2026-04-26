@@ -244,16 +244,46 @@ fix-flatpak-permissions:
     gum spin --title "flatpak repair --user" -- flatpak repair --user || bb_warn "flatpak repair reported issues"
     bb_ok "flatpak user installation repaired"
 
-# Configure WireGuard tunnels and trusted-network list (writes /etc/blueberry/wireguard/)
+# Install a WireGuard wg0 config that auto-connects on full network
+# connectivity. The 90-wg-autoconnect NetworkManager dispatcher script
+# (system_files/etc/NetworkManager/dispatcher.d/) brings wg0 up/down
+# based on `CONNECTIVITY_STATE`, so once the config is in place the
+# tunnel is fully managed for you.
 [group('Setup')]
-setup-wireguard:
+setup-vpn:
     #!/usr/bin/env bash
     set -eu
     . /usr/lib/blueberry/gum-theme.sh
-    bb_header "setup-wireguard"
-    bb_warn "stub — full implementation tracked in TODO"
-    bb_step "expected layout: /etc/blueberry/wireguard/{wg0.conf,trusted-networks}"
-    exit 0
+    bb_header "setup-vpn"
+    if [ -f /etc/wireguard/wg0.conf ]; then
+        if ! gum confirm "/etc/wireguard/wg0.conf already exists. Overwrite?"; then
+            bb_warn "cancelled"
+            exit 0
+        fi
+    fi
+    src="$(gum input --placeholder "Path to your wg0 .conf file")"
+    if [ -z "$src" ]; then
+        bb_err "no path provided"
+        exit 1
+    fi
+    # Expand ~ and resolve symlinks so the error message points at the
+    # real file the user typed.
+    src="${src/#\~/$HOME}"
+    if [ ! -r "$src" ]; then
+        bb_err "cannot read: $src"
+        exit 1
+    fi
+    sudo install -m 0600 -o root -g root -D "$src" /etc/wireguard/wg0.conf
+    bb_ok "wg0.conf installed (root:root 0600)"
+    bb_step "the NetworkManager dispatcher will auto-up wg0 once connectivity reaches FULL"
+    if gum confirm "Bring wg0 up now?"; then
+        if sudo wg-quick up wg0; then
+            bb_ok "wg0 is up"
+        else
+            bb_err "wg-quick up wg0 failed — check the config and try again"
+            exit 1
+        fi
+    fi
 
 # Enable the user Syncthing service and open firewall ports 22000/tcp + 21027/udp
 [group('Setup')]
@@ -290,6 +320,28 @@ setup-usbguard:
     sudo chmod 0600 /etc/usbguard/rules.conf
     sudo systemctl restart usbguard.service || bb_warn "usbguard restart failed"
     bb_ok "usbguard policy installed at /etc/usbguard/rules.conf"
+
+# Set the current user's login shell to zsh. Uses sudo + usermod rather
+# than chsh because Fedora's /etc/pam.d/chsh requires a password prompt
+# that doesn't work from non-interactive contexts (e.g. firstboot).
+[group('Setup')]
+set-default-shell-zsh:
+    #!/usr/bin/env bash
+    set -eu
+    . /usr/lib/blueberry/gum-theme.sh
+    bb_header "set-default-shell-zsh"
+    if ! [ -x /usr/bin/zsh ]; then
+        bb_err "zsh not installed"
+        exit 1
+    fi
+    current="$(getent passwd "$USER" | cut -d: -f7)"
+    if [ "$current" = "/usr/bin/zsh" ]; then
+        bb_ok "already using zsh"
+        exit 0
+    fi
+    bb_step "current shell: $current"
+    sudo usermod -s /usr/bin/zsh "$USER"
+    bb_ok "login shell set to zsh — log out and back in to take effect"
 
 # Enroll a YubiKey for U2F login (writes ~/.config/Yubico/u2f_keys)
 [group('Setup')]

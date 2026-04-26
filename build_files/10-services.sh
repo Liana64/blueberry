@@ -32,7 +32,9 @@ systemctl mask gdm.service
 
 # Hardware
 systemctl enable framework-charge-limit.service
-systemctl enable lock-before-sleep.service
+# lock-before-sleep is handled user-side by swayidle's `before-sleep` handler
+# (see etc/sway/config). A system-level swaylock invocation can't reach the
+# user's wayland socket, so this used to fail silently — it has been removed.
 systemctl enable pcscd.service
 
 # Bluetooth disabled at boot; waybar toggle re-enables
@@ -41,10 +43,12 @@ systemctl disable bluetooth.service || true
 # Spec §2 — services that must never run on Blueberry by default.
 # Some of these are not installed on base-main; `|| true` keeps the build
 # idempotent across base image churn.
+# xdg-desktop-portal-wlr is intentionally NOT shipped in the image — it is
+# layered on demand by `ujust enable-screencast`. No mask needed: when the
+# package isn't installed, the unit simply doesn't exist.
 for svc in avahi-daemon.service cups-browsed.service geoclue.service \
            packagekit.service abrt-journal-core.service abrt-oops.service \
-           abrt-vmcore.service abrt-xorg.service abrtd.service \
-           xdg-desktop-portal-wlr.service; do
+           abrt-vmcore.service abrt-xorg.service abrtd.service; do
     systemctl mask "$svc" || true
 done
 

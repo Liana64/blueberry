@@ -51,14 +51,10 @@ for_window [title="nix-rebuild"] floating enable, resize set 800 400
 ### Workspace assignments ###
 assign [app_id="Kitty"]       workspace q
 assign [app_id="Thunderbird"] workspace e
-assign [app_id="Element"]     workspace s
 assign [app_id="signal"]      workspace s
 assign [app_id="vesktop"]     workspace s
 assign [class="obsidian"]     workspace d
 assign [class="Cider"]        workspace z
-
-### Cursor theme (Bibata-Modern-Classic; bibata-cursor-themes RPM) ###
-seat * xcursor_theme Bibata-Modern-Classic 16
 
 ### Lid switch ###
 # Disable laptop display when the lid is closed (kept enabled when open)
@@ -78,9 +74,17 @@ exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY \
     SWAYSOCK XDG_CURRENT_DESKTOP=sway
 exec gnome-keyring-daemon --start --components=secrets,ssh,pkcs11
 
-# polkit-gnome auth agent + kitty session
-exec /usr/libexec/polkit-gnome-authentication-agent-1
+# Hyprland polkit auth agent (handles GUI password prompts for pkexec etc.) +
+# kitty startup session. Started via systemctl --user so the unit shipped by
+# the hyprpolkitagent package owns lifecycle/env, not sway.
+exec systemctl --user start hyprpolkitagent.service
 exec kitty --session startup.session
+
+# First-boot welcome: pops a kitty window the first time the user logs in
+# (idempotent — setup.sh exits immediately once ~/.config/blueberry/firstboot.done
+# exists). Replaces the systemd user oneshot, which had no TTY and so
+# couldn't drive `gum confirm` prompts.
+exec sh -c 'test -e "$HOME/.config/blueberry/firstboot.done" || kitty --hold -e /usr/share/blueberry/firstboot/setup.sh'
 
 ### Modifier keys ###
 set $mod Mod1
@@ -191,11 +195,13 @@ bindsym $mod+Shift+z  move container to workspace z
 bindsym $mod+Shift+x  move container to workspace x
 bindsym $mod+Shift+c  move container to workspace c
 
-# App-specific shortcuts
-bindsym $mod+Control+Shift+w  exec firefox
-bindsym $mod+Control+Shift+a  exec firefox "https://claude.ai"
-bindsym $mod+Control+Shift+s  exec element-desktop
-bindsym $mod+Control+Shift+d  exec obsidian
+# App-specific shortcuts. All Flatpaks — no bare binary lands in PATH, so go
+# through `flatpak run` (matches the workspace assignments above).
+bindsym $mod+Control+Shift+w  exec flatpak run org.mozilla.firefox
+bindsym $mod+Control+Shift+a  exec flatpak run org.mozilla.firefox "https://claude.ai"
+bindsym $mod+Control+Shift+d  exec flatpak run md.obsidian.Obsidian
+bindsym $mod+Control+Shift+s  exec flatpak run org.signal.Signal
+bindsym $mod+Control+Shift+v  exec flatpak run dev.vencord.Vesktop
 
 # Session
 bindsym $sup+Shift+q  kill
